@@ -1,0 +1,83 @@
+---
+# file: tasks/config_velneo.yml
+
+# TODO: 
+# - Revisar permisos para usar puerto 690 (DONE)
+
+# https://doc.velneo.es/requerimientos-de-velneo.html
+
+- name: create velneo user
+  user:
+    name: velneo
+    shell: /bin/sh
+    home: "{{ velneo_server_folder }}"
+    state: present
+    createhome: no
+
+- name: create velneo root dir
+  file:
+    path: "{{ item }}"
+    owner: velneo
+    group: velneo
+    mode: 0755
+    state: directory
+    #recurse: yes
+  with_items:
+    - "{{ velneo_server_folder }}"
+
+- name: create velneo folders
+  file:
+    path: "{{ item }}"
+    owner: velneo
+    group: velneo
+    mode: 0755
+    state: directory
+  with_items:
+    - "{{ velneo_server_folder }}/datos"
+    - "{{ velneo_server_folder }}/logs"
+    - "{{ velneo_server_folder }}/scripts"
+    - "{{ velneo_server_folder }}/Velneo-vServer"
+    - "{{ velneo_server_folder }}/Velneo-vmodapache"
+
+- name: copy and unarchive velneo packages
+  unarchive:
+    src: "{{ item }}"
+    dest: "{{ velneo_server_folder }}"
+    owner: velneo
+    group: velneo
+    copy: yes
+  with_items:
+    - velneo.tar.gz
+    - velneo-vmodapache.tar.gz
+  notify: restart supervisor
+
+# https://unix.stackexchange.com/questions/10735/linux-allowing-an-user-to-listen-to-a-port-below-1024
+- name: Add capability to velneo server to open port below 1024 TCP
+  capabilities:
+    path: "{{ velneo_server_bin}}"
+    capability: cap_net_bind_service+ep
+    state: present
+
+# Required to avoid issues not finding some library when running velneo
+- name: add velneo.conf to /etc/ld.so.conf.d/velneo.conf
+  template:
+    src: ld.conf.d_velneo.conf.j2
+    dest: /etc/ld.so.conf.d/velneo.conf
+  notify: update ldconfig
+
+- name: configure supervisor
+  template:
+    src: supervisor_velneo.conf.j2
+    dest: /etc/supervisor/conf.d/velneo.conf
+  notify: restart supervisor
+
+- name: configure supervisor logrotate
+  template:
+    src: supervisor_logrotate.j2
+    dest: /etc/logrotate.d/supervisor
+
+- name: ensure supervisor is running and enabled
+  service:
+    name: supervisor
+    state: started
+    enabled: yes

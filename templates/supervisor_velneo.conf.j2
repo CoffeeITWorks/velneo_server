@@ -1,0 +1,10 @@
+[program:velneo]
+priority={{ velneo_server_sv_priority }}
+directory={{ velneo_server_sv_directory }}
+environment={{ velneo_server_sv_environment }}
+command={{ velneo_server_sv_command }}
+user={{ velneo_server_sv_user }}
+autostart={{ velneo_server_sv_autostart }}
+autorestart={{ velneo_server_sv_autorestart }}
+stdout_logfile={{ velneo_server_sv_stdout_logfile }}
+stderr_logfile={{ velneo_server_sv_stderr_logfile }}

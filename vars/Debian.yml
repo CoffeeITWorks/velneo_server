@@ -1,0 +1,35 @@
+#::::::::::::::
+# Ubuntu.yml
+#::::::::::::::
+---
+
+velneo_server_packages:
+  - libgl1-mesa-dev
+  - libxslt1.1
+  - libxslt1-dev
+  - libxcomposite1
+  - libxcomposite-dev
+  - libpulse0
+  - libxrender1
+  - libgstreamer0.10-0
+  - libgstreamer-plugins-base0.10-0
+  - apache2
+  - apache2-mpm-worker
+  - supervisor
+  - freetds-dev
+  - freetds-bin
+  - tdsodbc
+  - unixodbc
+  - unixodbc-dev
+  - libfontconfig1
+  - libsm6
+  - fontconfig-config
+  - pulseaudio-module-x11
+  - pulseaudio-utils
+  - pulseaudio-esound-compat
+  - libxslt1-dbg
+  - libxcomposite1-dbg
+  #- libgstreamer*
+  #- pulseaudio-*
+
+velneo_server_apache: apache2

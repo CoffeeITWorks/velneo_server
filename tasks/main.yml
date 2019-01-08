@@ -1,0 +1,52 @@
+---
+# file: tasks/main.yml
+
+- name: fail when arquitecture not 32 bits
+  fail: msg="arquitecture must be 32 bits"
+  when: ansible_architecture not in "i386"
+
+- include: multi_os.yml
+
+- name: install role packages
+  package:
+    name: "{{ velneo_server_packages| join(',') }}"
+    state: present
+
+- name: setup system configurations
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+    - { src: "limits.conf.j2", dest: "/etc/security/limits.conf" }
+    - { src: "su.j2", dest: "/etc/pam.d/su" }
+
+- include: config_velneo.yml
+
+- include: config_apache.yml
+  when: velneo_server_apache_config
+
+- include: activator.yml
+  when: velneo_server_license | bool
+
+- include: config_sendmail.yml
+  when: velneo_server_sendmail
+
+- name: flush handlers to ensure supervisor is restarted when required
+  meta: flush_handlers
+
+- name: pause 5 seconds after flush
+  pause:
+    seconds: 5
+
+- name: start velneo service
+  supervisorctl:
+    name: velneo
+    state: started
+  notify: restart apache
+
+- name: wait for velneo tcp_port {{ velneo_server_port }}
+  wait_for: 
+    port: "{{ velneo_server_port }}"

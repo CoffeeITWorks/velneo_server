@@ -1,0 +1,18 @@
+---
+# file: tasks/config_sendmail.yml
+
+- name: create velneo folders
+  file:
+    path: "{{ velneo_server_folder }}/scripts/adjuntos"
+    owner: velneo
+    group: velneo
+    mode: 0755
+    state: directory
+
+- name: copy sendmail script
+  copy:
+    src: sendmail.py
+    dest: "{{ velneo_server_folder }}/scripts/"
+    owner: velneo
+    group: velneo
+    mode: 0755

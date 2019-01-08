@@ -1,0 +1,26 @@
+<Location /sendmail>
+	setHandler velneo
+	Vrl vatp://sendmail:@localhost:{{ velneo_server_port }}/MAIL_SERVER
+</Location>
+
+<Location /resmail>
+	setHandler velneo
+	Vrl vatp://resmail:resmail@localhost:{{ velneo_server_port }}/SEGURIDAD1
+</Location>
+
+<Location /bloqueos>
+	setHandler velneo
+	vrl vatp://sms:@localhost:{{ velneo_server_port }}/UPM_MAIN
+</Location>
+
+<Location /testsms>
+	setHandler velneo
+	vrl vatp://sms:@localhost:{{ velneo_server_port }}/EQUERY
+</Location>
+
+{% if velneo_server_ecalendario_module %}
+<Location /datacal>
+        setHandler velneo
+        vrl vatp://web:web@localhost:{{ velneo_server_port }}/DIARIOS1
+</Location>
+{% endif %}

@@ -1,0 +1,26 @@
+---
+# file defaults/main.yml
+# http://docs.ansible.com/ansible/playbooks_variables.html
+# Ejemplo de variable:
+
+velneo_server_license: False
+velneo_server_sendmail: False
+velneo_server_sql: False
+velneo_server_apache_config: False
+
+velneo_server_folder: "/opt/velneo"
+velneo_server_port: "690"
+velneo_server_sv_directory: "{{ velneo_server_folder }}/Velneo-vServer"
+velneo_server_bin: "{{ velneo_server_sv_directory }}/vServer"
+velneo_server_bin_script: "{{ velneo_server_sv_directory }}/vServer.sh"
+
+velneo_server_sv_priority: "400"
+# /sbin is also required for velneo PATH
+# https://doc.velneo.es/requerimientos-de-velneo.html
+velneo_server_sv_environment: 'QT_LOGGING_RULES="qt.network.ssl.warning=false",LD_LIBRARY_PATH=".:{{ velneo_server_sv_directory }}.:",HOME="{{ velneo_server_folder }}",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:{{ velneo_server_sv_directory }}",LANG="es_UY.UTF-8"'
+velneo_server_sv_command: "{{ velneo_server_bin_script }} -e /port={{ velneo_server_port }}"
+velneo_server_sv_user: "velneo"
+velneo_server_sv_autostart: "true"
+velneo_server_sv_autorestart: "true"
+velneo_server_sv_stdout_logfile: "/var/log/supervisor/velneo_stdout.log"
+velneo_server_sv_stderr_logfile: "/var/log/supervisor/velneo_stderr.log"

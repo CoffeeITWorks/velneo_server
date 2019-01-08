@@ -1,0 +1,43 @@
+---
+# file: tasks/config_apache.yml
+
+- name: setup apache2 configurations
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+    - { src: "envvars.j2", dest: "/etc/apache2/envvars" }
+    - { src: "vModApache.conf.j2", dest: "/etc/apache2/mods-available/vModApache.conf" }
+    - { src: "vModApache.load.j2", dest: "/etc/apache2/mods-available/vModApache.load" }
+
+- name: disable mpm modules
+  apache2_module: 
+    state: absent 
+    name: "{{ item }}"
+    ignore_configcheck: True
+  with_items:
+    - mpm_prefork 
+    - mpm_event
+  notify: restart apache
+
+- name: enable apache modules
+  apache2_module: 
+    state: present 
+    name: "{{ item }}"
+    ignore_configcheck: True
+  with_items:
+    - mpm_worker 
+  notify: restart apache
+
+# required for vModApache due to error with apache2_module
+- name: enable apache modules from shell 
+  shell:  a2enmod -q "{{ item }}"
+  become: true
+  with_items:
+    - vModApache
+  changed_when: false
+  tags:
+    - skip-ansible-lint

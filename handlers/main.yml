@@ -1,0 +1,15 @@
+# file: handlers/main.yml
+
+- name: restart apache
+  service: name={{ velneo_server_apache }} state=restarted
+
+- name: restart supervisor
+  service:
+    name: supervisor
+    state: restarted
+    sleep: 10
+  notify: restart apache
+
+- name: update ldconfig
+  shell: ldconfig
+  become: yes

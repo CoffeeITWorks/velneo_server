@@ -1,0 +1,17 @@
+---
+# file: tasks/activator.sh
+
+#Informacion sobre los parametros disponibles:
+#---------------------------------------------
+#-c (opcinal) - Modo consola (sin entorno grafico)
+#-l Licencia (opcional) - Caso de no especificarse se utiliza la existente
+#-u [0,1] (opcional) - Ubicacion: 0 por maquina(por defecto), 1 por usuario
+#-m ClaveActivacion (opcional) - Para activacion manual debe espeficar la clave
+#-r (opcional) - Usar si no desea especificar ninguno de los 3 anteriores y no se desea el modo interactivo
+#******************************************************************************
+
+- name: activate velneo license
+  command: "{{ velneo_server_folder }}/Velneo-vServer/vActivator.sh -l {{ velneo_server_license }} -u 0"
+  args:
+    creates: "/etc/xdg/Velneo/vServer.conf"
+  notify: restart supervisor
